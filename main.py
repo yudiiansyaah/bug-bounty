@@ -6,16 +6,15 @@ import random
 import csv
 import json
 from banners import bug_bounty_banner, created_by_banner
-import datetime #Import datetime
+import datetime
 
 def fetch_html(url):
-    """Fetches the HTML content from a given URL."""
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
         }
         response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status() 
         return response.content
     except requests.exceptions.RequestException as e:
         print(f"Error fetching URL {url}: {e}")
@@ -23,7 +22,6 @@ def fetch_html(url):
 
 
 def extract_news(html_content, url):
-    """Extracts news headlines and links from the HTML content."""
 
     if html_content is None:
         return []
@@ -31,7 +29,6 @@ def extract_news(html_content, url):
     soup = BeautifulSoup(html_content, 'html.parser')
     news_items = []
 
-    # **IMPORTANT**: Replace with the *ACTUAL* selectors from the website
     news_container = soup.find('div', id="news-container")
     if not news_container:
         print ("Could not find news container")
@@ -51,7 +48,6 @@ def extract_news(html_content, url):
 
 
 def output_data(news_items, output_format="text", output_file=None):
-    """Outputs the news data to the console or a file."""
     if output_format == "csv":
         if not output_file:
             print("Output file is required for csv format")
@@ -69,7 +65,7 @@ def output_data(news_items, output_format="text", output_file=None):
         with open(output_file, 'w', encoding='utf-8') as jsonfile:
             json.dump(news_items, jsonfile, indent=4)
         print(f"Data written to {output_file}")
-    else: # Default: text output
+    else: 
         if not news_items:
             print("No news items found")
             return
@@ -90,10 +86,10 @@ def main():
     args = parser.parse_args()
 
     url = args.url
-    news = [] # Initialize news variable
+    news = [] 
 
-    print(bug_bounty_banner()) #Print the banner
-    print(created_by_banner()) #Print the banner
+    print(bug_bounty_banner()) 
+    print(created_by_banner()) 
     start_time = datetime.datetime.now()
     while True:
         html_content = fetch_html(url)
@@ -106,7 +102,7 @@ def main():
             else:
                 print("No news items found.")
             output_data(news, args.output, args.output_file)
-            break  # Successfully fetched, so break out of loop
+            break 
         else:
             current_time = datetime.datetime.now()
             time_elapsed = (current_time - start_time).total_seconds()
@@ -115,7 +111,7 @@ def main():
                 break;
             print(f"Waiting for {args.delay} seconds before retrying...")
             time.sleep(args.delay)
-            #Add some randomization of the delays to be more considerate to the server.
+            
             args.delay += random.randint(0, 2)
 
 
